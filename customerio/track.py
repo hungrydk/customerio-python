@@ -49,6 +49,10 @@ class CustomerIO(ClientBase):
         '''Generates an event API path'''
         return '{base}/customers/{id}/events'.format(base=self.base_url, id=self._url_encode(customer_id))
 
+    def get_anonymous_event_query_string(self):
+        '''Generates an anonymous event API path'''
+        return '{base}/events'.format(base=self.base_url)
+
     def get_device_query_string(self, customer_id):
         '''Generates a device API path'''
         return '{base}/customers/{id}/devices'.format(base=self.base_url, id=self._url_encode(customer_id))
@@ -71,7 +75,16 @@ class CustomerIO(ClientBase):
         }
         self.send_request('POST', url, post_data)
 
-    def pageview(self, customer_id, page, **data):
+    def track_anonymous(self, name, **data):
+        '''Track an anonymous event'''
+        url = self.get_anonymous_event_query_string()
+        post_data = {
+            'name': name,
+            'data': data,
+        }
+        self.send_request('POST', url, post_data)
+
+        def pageview(self, customer_id, page, **data):
         '''Track a pageview for a given customer_id'''
         if not customer_id:
             raise CustomerIOException("customer_id cannot be blank in pageview")
